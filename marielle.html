@@ -1,0 +1,123 @@
+<meta charset="utf-8"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/4.0.1/wavesurfer.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/4.0.1/plugin/wavesurfer.regions.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/4.0.1/plugin/wavesurfer.timeline.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js"></script>
+
+<style>
+
+region.wavesurfer-region {
+	color: #B22222;
+	font-size: x-small;
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: bold;
+}
+
+region.wavesurfer-region.up:before {
+	content: attr(data-region-label);
+	position: absolute;
+	top: 0;
+}
+
+region.wavesurfer-region.down:before {
+	content: attr(data-region-label);
+	position: absolute;
+	bottom: 0;
+}
+
+region.wavesurfer-region.label:hover {
+  color: #FF4500;
+}
+
+
+</style>
+
+<div id="waveform">
+	<div class="progress progress-striped active" id="progress-bar">
+		<div class="progress-bar progress-bar-info"></div>
+	</div>
+
+	<!-- Here be waveform -->
+</div>
+<div id="wave-timeline"></div> 
+<p align="center">
+  <button class="btn btn-primary" onclick="wavesurfer.playPause()">
+    <i class="glyphicon glyphicon-play"></i>
+    Play/Pause
+  </button>
+</p>
+
+<div align="center">
+	<input type="range" min="0" max="200" value="0" class="slider" id="zoom">
+</div>
+
+<div align="center">
+  <a href="/marielle.pdf" target="_blank">PDF File</a>
+  <a href="/marielle.tiff" target="_blank">TIFF File</a>
+</div>
+
+<script>
+
+var call_id = 'marielle'
+
+var wavesurfer = WaveSurfer.create({
+    container: '#waveform',
+
+    waveColor: '#48D1CC', //'violet',
+    progressColor: '#2E8B57', //'purple',
+
+    splitChannels: true,
+	plugins: [
+		WaveSurfer.regions.create({}),
+		WaveSurfer.timeline.create({
+			container: "#wave-timeline"
+		}),
+	],
+});
+wavesurfer.load("/" + call_id + ".wav");
+
+wavesurfer.on('ready', function () {
+	axios.get("/" + call_id + ".json")
+	.then(function (response) {
+		//console.log(response);
+
+		response.data.forEach(e => {
+			var ts = parseInt(e.time) / 1000
+			var item = {
+				start: ts,
+				end: ts,
+				loop: false,
+				drag: false,
+				resize: false,
+				attributes: {
+					label: e.aggregation == "0" ? e.event + ' ▲' : ' ▼ ' + e.event,
+				}
+			}
+			var r = wavesurfer.addRegion(item)
+			r.on('click', () => alert(item))
+			//console.dir(r.element)
+			if(e.aggregation == "0") {
+				r.element.className += ` up label`;
+			} else {
+				r.element.className += ` down label`;
+			}
+		})
+
+	})
+	.catch(function (error) {
+		// handle error
+		console.log(error);
+	})
+
+	document.querySelector('#zoom').oninput = function () {
+		wavesurfer.zoom(Number(this.value));
+	};
+
+	document.querySelector('#zoom').value = 0;
+	
+	wavesurfer.zoom(0);
+});
+
+
+
+</script>
