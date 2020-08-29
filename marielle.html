@@ -54,7 +54,7 @@ region.wavesurfer-region.label:hover {
 </p>
 
 <div align="center">
-	<input type="range" min="0" max="200" value="0" class="slider" id="zoom">
+	<input type="range" min="0" max="200" value="200" class="slider" id="zoom">
 </div>
 
 <div align="center">
@@ -121,9 +121,9 @@ wavesurfer.on('ready', function () {
 		wavesurfer.zoom(Number(this.value));
 	};
 
-	document.querySelector('#zoom').value = 0;
+	document.querySelector('#zoom').value = 200;
 	
-	wavesurfer.zoom(0);
+	wavesurfer.zoom(200);
 });
 
 
