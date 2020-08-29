@@ -6,8 +6,13 @@
 
 <style>
 
+body {
+	background-color: #D3D3D3;
+}
+
 region.wavesurfer-region {
-	color: #B22222;
+	/*color: #B22222;*/
+	color: green;
 	font-size: x-small;
 	font-family: Arial, Helvetica, sans-serif;
 	font-weight: bold;
@@ -26,7 +31,8 @@ region.wavesurfer-region.down:before {
 }
 
 region.wavesurfer-region.label:hover {
-  color: #FF4500;
+	/*color: #FF4500; */
+	color: limegreen;
 }
 
 
@@ -63,8 +69,10 @@ var call_id = 'marielle'
 var wavesurfer = WaveSurfer.create({
     container: '#waveform',
 
-    waveColor: '#48D1CC', //'violet',
-    progressColor: '#2E8B57', //'purple',
+	waveColor: '#A0A0A0', //gray
+    //waveColor: '#48D1CC', //'violet',
+    //progressColor: '#2E8B57', //'purple',
+    progressColor: '#282828', // black
 
     splitChannels: true,
 	plugins: [
@@ -94,7 +102,7 @@ wavesurfer.on('ready', function () {
 				}
 			}
 			var r = wavesurfer.addRegion(item)
-			r.on('click', () => alert(item))
+			r.on('click', () => alert(e.details))
 			//console.dir(r.element)
 			if(e.aggregation == "0") {
 				r.element.className += ` up label`;
